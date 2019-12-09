@@ -114,7 +114,6 @@ def solve(intcode):
         input = 0
         for amp, prog in itertools.cycle(programs):
             output = prog.send(input)  # send signal to program, and get output
-            input = output
             try:
                 next(prog)  # continue program
             except StopIteration:
