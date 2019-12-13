@@ -24,7 +24,6 @@ def search(scoreboard, sequence):
                 assert len(scoreboard[-seqlen - 1:-1]) == seqlen
                 if scoreboard[-seqlen - 1:-1] == sequence:
                     return len(scoreboard[:-seqlen - 1])
-        print(count)
         scoreboard, elf1, elf2 = createnew(scoreboard, elf1, elf2)
         count += 1
 
