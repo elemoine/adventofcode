@@ -2,8 +2,10 @@
 # https://github.com/emilysmiddleton/advent-of-code-2019/blob/master/src/day22/day22.md
 #
 
+import math
 
-def readoperations(inputfile):
+
+def read(inputfile):
     with open(inputfile) as f:
         operations = [l.strip() for l in f]
     for i in range(len(operations)):
@@ -20,29 +22,7 @@ def readoperations(inputfile):
     return operations
 
 
-def deal(decklen, operations, i):
-    for o, n in operations:
-        if o == "cut":
-            if n >= 0:
-                if i >= n:
-                    i -= n
-                else:
-                    i += decklen - n
-            else:
-                if i < decklen + n:
-                    i -= n
-                else:
-                    i -= decklen + n
-        elif o == "dealintonewstack":
-            i = decklen - 1 - i
-        elif o == "dealwithincrement":
-            i = (i * n) % decklen
-        else:
-            raise ValueError("unknown operation", o)
-    return i
-
-
-def combineoperations(decklen, operations):
+def combine(decklen, operations):
     # dealintonewstack (-1 - x) mod m
     # cut (x - n) mod m
     # dealwithincrement (x * n) mod m
@@ -70,10 +50,53 @@ def combineoperations(decklen, operations):
     return a % decklen, b % decklen
 
 
+def repeat(a, b, m, n):
+    # we need to repeat n times
+    #
+    # to repeat 2 times: a2, b2 = (a**2) % m, (b * (a + 1)) % m
+    # to repeat 4 times: a4, b4 = (a2**2) % m, (b2 * (a2 + 1)) % m
+    # to repeat 8 times: a8, b8 = (a4**2) % m, (b4 * (a4 + 1)) % m
+    # ...
+    # we repeat 2**logn times, 2**logn times what's left, etc.
+    a1, b1 = 1, 0
+    n2 = n
+    while n2 > 0:
+        a2, b2 = a, b
+        logn = math.floor(math.log(n2, 2))
+        for _ in range(logn):
+            a2, b2 = (a2**2) % m, (b2 * (a2 + 1)) % m
+        a1, b1 = (a1 * a2) % m, (a1 * b2 + b1) % m
+        n2 -= 2**logn
+    assert n2 == 0
+    return a1, b1
+
+
+def inverse(a, b):
+    m = b
+    prevx, x = 1, 0
+    prevy, y = 0, 1
+    while b:
+        q = a // b
+        x, prevx = prevx - q * x, x
+        y, prevy = prevy - q * y, y
+        a, b = b, a % b
+    return prevx % m
+
+
 def main(inputfile):
-    operations = readoperations(inputfile)
-    a, b = combineoperations(10007, operations)
-    print(a, b, (a * 2019 + b) % 10007)
+    m, x, n = 10007, 6326, 1
+    operations = read(inputfile)
+    a, b = combine(m, operations)
+    a, b = repeat(a, b, m, n)
+    i = inverse(a, m)
+    print(((x - b) * i) % m)
+
+    m, x, n = 119315717514047, 2020, 101741582076661
+    operations = read(inputfile)
+    a, b = combine(m, operations)
+    a, b = repeat(a, b, m, n)
+    i = inverse(a, m)
+    print(((x - b) * i) % m)
 
 
 if __name__ == "__main__":
