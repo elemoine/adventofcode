@@ -1,3 +1,8 @@
+#
+# https://github.com/emilysmiddleton/advent-of-code-2019/blob/master/src/day22/day22.md
+#
+
+
 def readoperations(inputfile):
     with open(inputfile) as f:
         operations = [l.strip() for l in f]
@@ -37,10 +42,38 @@ def deal(decklen, operations, i):
     return i
 
 
+def combineoperations(decklen, operations):
+    # dealintonewstack (-1 - x) mod m
+    # cut (x - n) mod m
+    # dealwithincrement (x * n) mod m
+    #
+    # example: m = 10, x = 2
+    # - cut 6 : 2 - 6 mod 10 = -4 mod 10 = 6
+    # - deal with increment 7 = 6 * 7 mod 10 = 2
+    # - deal into new stack : -1 - 2 mod 10 = 7
+    #
+    a, b = 1, 0
+    for o, n in operations:
+        if o == "dealintonewstack":
+            # (-1 - x) = (-1 - (ax + b)) = -ax + (-b - 1)
+            a = -a
+            b = -b - 1
+        elif o == "cut":
+            # (x - n) = ((ax + b) - n) = ax + b - n
+            b = b - n
+        elif o == "dealwithincrement":
+            # (x * n) = ((ax + b) * n) = n * a * x + n * b
+            a = a * n
+            b = b * n
+        else:
+            raise ValueError("unknown operation", o)
+    return a % decklen, b % decklen
+
+
 def main(inputfile):
     operations = readoperations(inputfile)
-    i = deal(119315717514047, operations, 2020)
-    print(i)
+    a, b = combineoperations(10007, operations)
+    print(a, b, (a * 2019 + b) % 10007)
 
 
 if __name__ == "__main__":
