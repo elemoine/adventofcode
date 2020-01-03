@@ -35,11 +35,7 @@ if __name__ == "__main__":
             end = r[0]
             for m in range(begin.minute, end.minute):
                 guards[guard][m] += 1
-    max_ = float("-inf")
-    for g in guards:
-        for m in guards[guard]:
-            if guards[g][m] > max_:
-                max_ = guards[g][m]
-                guard = g
-                minute = m
+    guard, minute, _ = max(
+        ((g, m, guards[g][m]) for g in guards for m in guards[guard]),
+        key=lambda t: t[2])
     print(guard, minute, guard * minute)
