@@ -1,12 +1,23 @@
-def main():
+from part1 import twosum
+
+
+def threesum(numbers, target):
+    for i in range(len(numbers)):
+        a, b = twosum(numbers[i + 1:], target - numbers[i])
+        if a is not None:
+            return numbers[i], a, b
+    return None, None, None
+
+
+def main(target):
     with open("input") as f:
-        entries = [int(entry.strip()) for entry in f]
-        for i in range(len(entries)):
-            for j in range(len(entries)):
-                for k in range(len(entries)):
-                    if entries[i] + entries[j] + entries[k] == 2020:
-                        return entries[i] * entries[j] * entries[k]
+        numbers = [int(row.strip()) for row in f]
+    numbers.sort()
+    a, b, c = threesum(numbers, target)
+    if a is None:
+        return "No result"
+    return a * b * c
 
 
 if __name__ == "__main__":
-    print(main())
+    print(main(2020))
