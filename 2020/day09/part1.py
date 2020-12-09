@@ -1,12 +1,10 @@
 def is_valid(n, numbers, psize):
-    b = [0] * numbers[n]
     for i in range(n - psize, n):
-        if numbers[i] < len(b):
-            b[numbers[i]] = 1
-    for i in range(n - psize, n):
-        j = numbers[n] - numbers[i]
-        if j != numbers[i] and j >= 0 and b[j]:
-            return True
+        ni = numbers[i]
+        for j in range(i + 1, n):
+            nj = numbers[j]
+            if ni != nj and ni + nj == numbers[n]:
+                return True
     return False
 
 
