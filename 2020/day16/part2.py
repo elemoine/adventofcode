@@ -18,7 +18,7 @@ def main():
     rules, my_ticket, nearby_tickets = parse_notes("input")
 
     # filter out invalid nearby tickets
-    nearby_tickets = list(valid_tickets(nearby_tickets, rules))
+    nearby_tickets = valid_tickets(nearby_tickets, rules)
 
     # determine all the possible rules for each field
     d = defaultdict(set)
